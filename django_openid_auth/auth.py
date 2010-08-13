@@ -138,8 +138,8 @@ class OpenIDBackend:
 
     def create_user_from_openid(self, openid_response):
         details = self._extract_user_details(openid_response)
-        nickname = details['nickname'] or 'openiduser'
         email = details['email'] or ''
+        nickname = details['nickname'] or email.split('@')[0]
 
         # Pick a username for the user based on their nickname,
         # checking for conflicts.
