@@ -141,21 +141,14 @@ class OpenIDBackend:
         email = details['email'] or ''
         nickname = details['nickname'] or email.split('@')[0]
 
-        # Pick a username for the user based on their nickname,
-        # checking for conflicts.
-        i = 1
-        while True:
-            username = nickname
-            if i > 1:
-                username += str(i)
-            try:
-                User.objects.get(username__exact=username)
-            except User.DoesNotExist:
-                break
-            i += 1
+        username = nickname
 
-        user = User.objects.create_user(username, email, password=None)
-        self.update_user_details(user, details)
+        # This is not a problem, since we are using this as SSO
+        try:
+            user = User.objects.get(username__exact=username)
+        except User.DoesNotExist:
+            user = User.objects.create_user(username, email, password=None)
+            self.update_user_details(user, details)
 
         self.associate_openid(user, openid_response)
         return user
